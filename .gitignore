@@ -1,0 +1,25 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.db
+
+# node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# real partner data (names, addresses, e-mails) — never publish; load locally with scripts/import_partners.py
+backend/FITYES_Partner_shareable with Developers.xlsx
+# Office lock files
+~$*
+
+# not yet reviewed for real credentials — check they hold placeholders only before un-ignoring
+backend/.env.example
+frontend/.env.example

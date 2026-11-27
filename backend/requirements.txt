@@ -1,0 +1,12 @@
+fastapi==0.119.1
+uvicorn[standard]==0.54.0
+SQLAlchemy==2.0.58
+psycopg[binary]==3.3.9
+pydantic==2.14.4
+pydantic-settings==2.16.3
+alembic==1.20.1
+openpyxl==3.1.5  # scripts/import_partners.py
+
+# dev / test
+pytest==9.2.0
+httpx==0.28.1
