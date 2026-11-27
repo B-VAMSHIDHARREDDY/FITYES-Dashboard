@@ -16,9 +16,10 @@ from app.schemas.analytics import (
 from app.services import analytics_service as svc
 
 router = APIRouter()
+public_router = APIRouter()  # no sign-in required (load balancer / uptime checks)
 
 
-@router.get("/health", tags=["meta"])
+@public_router.get("/health", tags=["meta"])
 def health(db: DbSession):
     db.execute(text("SELECT 1"))
     return {"status": "ok", "database": "up"}

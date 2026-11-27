@@ -1,14 +1,16 @@
 import { motion } from "framer-motion";
-import { Bell, ChevronDown, FlaskConical, Moon, Plus, Search, Sun, Volume2, VolumeX } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { Bell, ChevronDown, FlaskConical, LogOut, Moon, Plus, Search, Sun, Volume2, VolumeX } from "lucide-react";
+import { type FormEvent, useRef, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { useNavCounts } from "@/api/hooks";
+import { Popover } from "@/components/ui/Popover";
 import type { MessageKey } from "@/i18n/en";
 import { useI18n } from "@/i18n/I18nProvider";
 import { cn } from "@/lib/cn";
 import type { Lang } from "@/lib/format";
 import { sound } from "@/lib/sound";
+import { useAuth } from "@/providers/AuthProvider";
 import { useSampleData } from "@/providers/useSampleData";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useSoundPrefs } from "@/providers/useSound";
@@ -50,7 +52,7 @@ function SampleSwitch() {
   );
 }
 
-function LanguageSwitch() {
+export function LanguageSwitch() {
   const { lang, setLang, t } = useI18n();
   return (
     <div role="radiogroup" aria-label={t("nav.language")} className="flex h-9 items-center rounded-full border border-line bg-surface-muted p-0.5">
@@ -67,6 +69,59 @@ function LanguageSwitch() {
         </button>
       ))}
     </div>
+  );
+}
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const letters = parts.length > 1 ? parts[0][0] + parts[parts.length - 1][0] : (parts[0] ?? "?").slice(0, 2);
+  return letters.toUpperCase();
+}
+
+function AccountMenu() {
+  const { t } = useI18n();
+  const { user, logout } = useAuth();
+  const anchor = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  if (!user) return null;
+
+  return (
+    <>
+      <button
+        ref={anchor}
+        type="button"
+        className="flex items-center gap-1 text-ink-2 hover:text-ink"
+        aria-label={t("nav.account")}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        title={user.name}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <span className="relative grid size-8 place-items-center rounded-full bg-brand-soft text-xs font-semibold text-brand-text">
+          {initials(user.name)}
+          <span className="absolute right-0 bottom-0 size-2 rounded-full bg-good-fill ring-2 ring-[var(--surface-solid)]" />
+        </span>
+        <ChevronDown size={14} className="hidden xl:block" />
+      </button>
+      <Popover anchor={anchor} open={open} onClose={() => setOpen(false)} align="end" matchWidth={false} className="w-60">
+        <div className="px-3 pt-2.5 pb-2">
+          <p className="truncate text-sm font-medium">{user.name}</p>
+          <p className="truncate text-xs text-ink-3">{user.email ?? user.user_id}</p>
+        </div>
+        <div className="my-1 h-px bg-line" />
+        <button
+          type="button"
+          role="menuitem"
+          onClick={() => {
+            setOpen(false);
+            logout();
+          }}
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-ink-2 hover:bg-surface-muted hover:text-ink"
+        >
+          <LogOut size={15} /> {t("nav.signOut")}
+        </button>
+      </Popover>
+    </>
   );
 }
 
@@ -176,13 +231,7 @@ export function TopNav() {
           )}
         </button>
 
-        <button className="hidden items-center gap-1 text-ink-2 xl:flex" aria-label={t("nav.account")}>
-          <span className="relative grid size-8 place-items-center rounded-full bg-brand-soft text-xs font-semibold text-brand-text">
-            LH
-            <span className="absolute right-0 bottom-0 size-2 rounded-full bg-good-fill ring-2 ring-[var(--surface-solid)]" />
-          </span>
-          <ChevronDown size={14} />
-        </button>
+        <AccountMenu />
       </div>
     </header>
   );
