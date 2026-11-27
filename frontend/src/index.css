@@ -303,3 +303,297 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Login ----------
+   Same layout as the FITYES CRM sign-in page, recoloured with this app's chalk / ink / lime tokens. */
+.login {
+  min-height: 100vh;
+  background: var(--surface-solid);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.dark .login {
+  background: var(--bg);
+}
+.login-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 30px 70px;
+  position: relative;
+  z-index: 2;
+}
+.login-logo {
+  display: inline-flex;
+  align-items: flex-start;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+.login-logo sup {
+  /* undo Tailwind preflight's sup offset (relative/-0.5em, line-height 0) */
+  position: static;
+  line-height: 1;
+  font-size: 0.42em;
+  font-weight: 500;
+  margin: -2px 0 0 2px;
+}
+.login-top-right {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.login-top .link,
+.login .forgot {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.login-slashes i {
+  position: absolute;
+  display: block;
+  transform: skewX(-33deg);
+  border-radius: 18px;
+  z-index: 0;
+}
+.login-slashes i:nth-child(1) {
+  width: 250px;
+  height: 410px;
+  left: 30px;
+  bottom: 30px;
+  background: var(--brand-soft);
+}
+.login-slashes i:nth-child(2) {
+  width: 190px;
+  height: 210px;
+  left: 170px;
+  bottom: -20px;
+  background: var(--brand-soft);
+}
+.dark .login-slashes i:nth-child(1) {
+  background: linear-gradient(180deg, rgb(178 255 80 / 0.42), rgb(178 255 80 / 0.12));
+}
+.dark .login-slashes i:nth-child(2) {
+  background: linear-gradient(180deg, rgb(178 255 80 / 0.3), rgb(178 255 80 / 0.08));
+}
+.login-center {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr); /* let the card shrink below its content's natural width */
+  place-items: center;
+  padding: 20px 24px 60px;
+  position: relative;
+  z-index: 1;
+}
+.login-card {
+  width: 100%;
+  max-width: 1114px;
+  min-height: 694px;
+  display: grid;
+  grid-template-columns: 678px 1fr;
+  background: var(--surface-solid);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgb(8 8 8 / 0.1);
+}
+.dark .login-card {
+  box-shadow: 0 30px 80px rgb(0 0 0 / 0.55);
+}
+.login-form {
+  padding: 56px 60px 30px;
+  display: flex;
+  flex-direction: column;
+}
+.login-form .eyebrow {
+  font-size: 21px;
+  margin-bottom: 12px;
+}
+.login-form h1 {
+  font-size: 50px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+.login-form .lead {
+  font-size: 21px;
+  color: var(--ink-3);
+  margin: 10px 0 42px;
+}
+.login-form .lbl {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  display: block;
+}
+.login-input {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 52px;
+  border: 1px solid var(--line);
+  background: var(--surface-solid);
+  color: var(--ink-2);
+  border-radius: 8px;
+  padding: 0 18px 0 20px;
+  margin-bottom: 22px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.dark .login-input {
+  border-color: rgb(252 252 250 / 0.18);
+}
+.login-input:focus-within {
+  border-color: var(--brand-text);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+.login-input input {
+  flex: 1;
+  width: 0; /* grow from 0 instead of the browser's ~20ch default, so narrow screens don't overflow */
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 17.5px;
+}
+.login-input input::placeholder {
+  color: var(--ink-3);
+}
+.login-input .eye {
+  border: 0;
+  background: none;
+  color: var(--ink);
+  padding: 4px;
+  display: grid;
+  cursor: pointer;
+}
+.login .forgot {
+  align-self: flex-end;
+  margin-top: -4px;
+}
+.login-msg {
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.login-error {
+  background: var(--bad-soft);
+  color: var(--bad-on);
+}
+.login-info {
+  background: var(--brand-soft);
+  color: var(--ink);
+}
+.signin {
+  margin-top: 42px;
+  height: 56px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--black);
+  color: var(--chalk);
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.dark .signin {
+  background: var(--lime);
+  color: var(--black);
+}
+.signin:hover:not(:disabled) {
+  filter: brightness(1.15);
+}
+.dark .signin:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+.signin:active:not(:disabled) {
+  transform: scale(0.99);
+}
+.signin:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+.login-foot {
+  margin-top: 42px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 15.5px;
+  color: var(--ink-2);
+  text-align: center;
+}
+.login-photo {
+  background-size: cover;
+  background-position: center;
+  min-height: 260px;
+}
+.login-theme {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 5;
+}
+@media (max-width: 1280px) {
+  .login-card {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+@media (max-width: 900px) {
+  .login-card {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    max-width: 620px;
+  }
+  .login-photo {
+    order: -1;
+    min-height: 200px;
+    background-position: center 35%;
+  }
+  .login-form {
+    padding: 36px 28px 24px;
+  }
+  .login-top {
+    padding: 22px 24px;
+  }
+}
+@media (max-width: 760px) {
+  .login-top-right {
+    gap: 12px;
+  }
+  .login-top .link,
+  .login .forgot {
+    font-size: 15px;
+  }
+  .login-logo {
+    font-size: 24px;
+  }
+  .login-form h1 {
+    font-size: 38px;
+  }
+  .login-form .lead,
+  .login-form .eyebrow {
+    font-size: 18px;
+  }
+  .login-slashes {
+    display: none;
+  }
+}

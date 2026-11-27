@@ -40,6 +40,20 @@ def _enum(e: type, name: str) -> Enum:
 Money = Numeric(14, 2)
 
 
+class User(Base, TimestampMixin):
+    """Someone who can sign in to the dashboard. Lives only in the real schema, never the sample one."""
+
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[str] = mapped_column(String(64), unique=True)  # login name, stored lower-case
+    name: Mapped[str] = mapped_column(String(120))
+    email: Mapped[str | None] = mapped_column(String(200))
+    role: Mapped[str] = mapped_column(String(20), default="member")
+    password_hash: Mapped[str] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
 class Agent(Base, TimestampMixin):
     __tablename__ = "agents"
 

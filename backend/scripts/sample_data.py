@@ -27,6 +27,8 @@ def main() -> None:
     # Copy every table definition into the sample schema (FKs are re-targeted to it as well).
     sample_md = MetaData()
     for table in Base.metadata.sorted_tables:
+        if table.name == "users":  # sign-in accounts exist only in the real schema
+            continue
         table.to_metadata(sample_md, schema=schema)
     sample_md.create_all(engine)
     # Columns added by later migrations (create_all never alters existing tables).

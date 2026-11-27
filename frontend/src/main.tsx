@@ -9,6 +9,7 @@ import { ApiError } from "@/api/client";
 import { App } from "@/App";
 import { I18nProvider } from "@/i18n/I18nProvider";
 import { sound } from "@/lib/sound";
+import { AuthProvider } from "@/providers/AuthProvider";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
 const queryClient = new QueryClient({
@@ -32,7 +33,9 @@ createRoot(document.getElementById("root")!).render(
     <I18nProvider>
       <ThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </QueryClientProvider>
       </ThemeProvider>
     </I18nProvider>

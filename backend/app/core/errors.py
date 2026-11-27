@@ -27,3 +27,8 @@ class NotFoundError(DomainError):
 class ConflictError(DomainError):
     status_code = 409
     code = "conflict"
+
+
+class UnauthorizedError(DomainError):
+    status_code = 401
+    code = "unauthorized"

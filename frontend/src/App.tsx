@@ -1,10 +1,12 @@
 import { lazy, type ReactNode, Suspense } from "react";
-import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider, useLocation } from "react-router-dom";
 
 import { AppShell } from "@/components/layout/AppShell";
 import { Skeleton } from "@/components/ui/primitives";
 import { useI18n } from "@/i18n/I18nProvider";
+import { useAuth } from "@/providers/AuthProvider";
 
+const LoginPage = lazy(() => import("@/features/auth/LoginPage"));
 const DeskPage = lazy(() => import("@/features/desk/DeskPage"));
 const ListingsPage = lazy(() => import("@/features/listings/ListingsPage"));
 const DealsBoardPage = lazy(() => import("@/features/deals/DealsBoardPage"));
@@ -32,14 +34,28 @@ function NotFound() {
   );
 }
 
+/** Sends signed-out visitors to /login, remembering where they were headed. */
+function RequireAuth({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  if (loading) return null; // checking a stored session — avoids flashing the login page
+  if (!user) return <Navigate to="/login" replace state={{ from: location }} />;
+  return children;
+}
+
 const page = (el: ReactNode) => <Suspense fallback={<PageFallback />}>{el}</Suspense>;
 
 const router = createBrowserRouter([
+  { path: "/login", element: <Suspense fallback={null}><LoginPage /></Suspense> },
   // The Agents tab was replaced by Partners (Excel data). Redirect outside the animated shell so
   // the page transition never has to run for the throw-away /agents render.
   { path: "/agents", element: <Navigate to="/partners" replace /> },
   {
-    element: <AppShell />,
+    element: (
+      <RequireAuth>
+        <AppShell />
+      </RequireAuth>
+    ),
     children: [
       { index: true, element: page(<DeskPage />) },
       { path: "listings", element: page(<ListingsPage />) },

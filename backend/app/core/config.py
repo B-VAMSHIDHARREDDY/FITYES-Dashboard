@@ -30,6 +30,16 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # Auth. Set JWT_SECRET in production; when empty a random per-process secret is used (dev only),
+    # which signs everyone out whenever the API restarts.
+    jwt_secret: str = ""
+    jwt_expire_minutes: int = 720
+    # First admin, created on startup when the users table is empty. Leave the password empty to
+    # have one generated and printed once to the console.
+    initial_admin_user_id: str = "admin"
+    initial_admin_name: str = "Administrator"
+    initial_admin_password: str = ""
+
     @property
     def sqlalchemy_url(self) -> str:
         """Normalise provider URLs (`postgres://`) to the psycopg3 driver."""

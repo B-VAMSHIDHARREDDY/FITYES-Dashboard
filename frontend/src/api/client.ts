@@ -31,6 +31,31 @@ export const sampleData = {
   },
 };
 
+/* ---------- sign-in token ----------
+   JWT from POST /auth/login, sent as `Authorization: Bearer …` on every request. Any 401 outside the
+   login call itself (expired/revoked session) fires UNAUTHORIZED_EVENT so the app returns to /login. */
+const TOKEN_KEY = "fityes-token";
+export const UNAUTHORIZED_EVENT = "fityes:unauthorized";
+let token: string | null = (() => {
+  try {
+    return localStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+})();
+export const authToken = {
+  get: () => token,
+  set(value: string | null) {
+    token = value;
+    try {
+      if (value) localStorage.setItem(TOKEN_KEY, value);
+      else localStorage.removeItem(TOKEN_KEY);
+    } catch {
+      /* storage unavailable — token still applies for this session */
+    }
+  },
+};
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -63,6 +88,7 @@ async function request<T>(method: string, path: string, opts: { query?: Query; b
       headers: {
         ...(opts.body !== undefined ? { "Content-Type": "application/json" } : {}),
         ...(sampleOn ? { "X-Sample-Data": "1" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
     });
@@ -72,6 +98,7 @@ async function request<T>(method: string, path: string, opts: { query?: Query; b
   }
 
   if (!res.ok) {
+    if (res.status === 401 && path !== "/auth/login") window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
     let code = "http_error";
     let message = res.statusText || "Request failed";
     let params: Record<string, unknown> = {};
