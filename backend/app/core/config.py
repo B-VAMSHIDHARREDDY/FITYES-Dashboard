@@ -22,8 +22,6 @@ class Settings(BaseSettings):
 
     database_url: str = Field(..., description="Postgres (or SQLite for local dev/tests) URL")
     db_schema: str = "realestate"
-    # Demo dataset lives in its own schema; requests with `X-Sample-Data: 1` read/write it instead.
-    sample_schema: str = "realestate_sample"
     db_pool_size: int = 5
     db_max_overflow: int = 10
     db_echo: bool = False
@@ -57,11 +55,6 @@ class Settings(BaseSettings):
     def effective_schema(self) -> str | None:
         """SQLite has no schemas; Postgres tables live in an isolated schema."""
         return None if self.is_sqlite else self.db_schema
-
-    @property
-    def sample_supported(self) -> bool:
-        """Sample mode swaps Postgres schemas, which SQLite doesn't have."""
-        return not self.is_sqlite
 
     @property
     def cors_origin_list(self) -> list[str]:

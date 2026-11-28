@@ -238,7 +238,7 @@ export const de: Record<MessageKey, string> = {
   "sample.label": "Beispieldaten",
   "sample.hintOff": "Beispieldaten anzeigen (Demo-Inhalte)",
   "sample.hintOn": "Beispieldaten ausblenden und zurück zu Ihren echten Daten",
-  "sample.banner": "Beispieldaten sind aktiv – Sie sehen Demo-Inhalte. Änderungen hier wirken sich nie auf Ihre echten Partnerdaten aus.",
+  "sample.banner": "Beispieldaten sind aktiv – Sie sehen Demo-Inhalte aus einer Beispieldatei. Änderungen hier sind nur vorübergehend und betreffen nie Ihre echten Daten.",
   "sample.turnOff": "Ausschalten",
   "picker.search": "Suchen…",
   "picker.noResults": "Keine Treffer",

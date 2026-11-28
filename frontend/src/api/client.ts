@@ -2,7 +2,8 @@ const BASE = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "") + "/api/v1"
 
 /* ---------- sample-data mode ----------
    Off by default. When on, every request carries `X-Sample-Data: 1` and the API serves the demo
-   dataset (a separate schema), so real partner data is never mixed with or changed by demo content. */
+   dataset from a JSON file (held in memory on the server), so the database only ever holds real data.
+   Edits made in sample mode are temporary and are reset when the API restarts. */
 const SAMPLE_KEY = "fityes-sample-data";
 let sampleOn = (() => {
   try {

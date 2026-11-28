@@ -37,25 +37,21 @@ def _build_engine() -> Engine:
 engine = _build_engine()
 SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
 
-# Same pool, but every table in the app schema is transparently redirected to the sample schema.
 SAMPLE_HEADER = "x-sample-data"
-sample_engine = (
-    engine.execution_options(schema_translate_map={settings.db_schema: settings.sample_schema})
-    if settings.sample_supported
-    else None
-)
-SampleSessionLocal = (
-    sessionmaker(bind=sample_engine, autoflush=False, expire_on_commit=False) if sample_engine is not None else None
-)
 
 
 def get_db(request: Request) -> Iterator[Session]:
     """FastAPI dependency: yields a session and guarantees cleanup.
 
-    `X-Sample-Data: 1` switches the request to the demo dataset (separate schema, never the real data).
+    `X-Sample-Data: 1` switches the request to the demo dataset, which is loaded from a JSON file into
+    memory (see app.db.sample) — the real database is never touched in sample mode.
     """
-    use_sample = request.headers.get(SAMPLE_HEADER) == "1" and SampleSessionLocal is not None
-    db = (SampleSessionLocal if use_sample else SessionLocal)()  # type: ignore[misc]
+    if request.headers.get(SAMPLE_HEADER) == "1":
+        from app.db.sample import sample_session  # imported lazily: avoids a models <-> session cycle
+
+        yield from sample_session()
+        return
+    db = SessionLocal()
     try:
         yield db
     finally:

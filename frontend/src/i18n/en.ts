@@ -247,7 +247,7 @@ export const en = {
   "sample.label": "Sample data",
   "sample.hintOff": "Show sample data (demo content)",
   "sample.hintOn": "Hide sample data and go back to your real data",
-  "sample.banner": "Sample data is on — you're looking at demo content. Changes here never affect your real partner data.",
+  "sample.banner": "Sample data is on — you're looking at demo content from a sample file. Changes here are temporary and never touch your real data.",
   "sample.turnOff": "Turn off",
   "picker.search": "Search…",
   "picker.noResults": "No matches",

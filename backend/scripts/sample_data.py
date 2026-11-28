@@ -1,48 +1,31 @@
-"""Create / refresh the SAMPLE dataset shown when the header's "Sample data" switch is on.
+"""(Re)generate the SAMPLE dataset file shown when the header's "Sample data" switch is on.
 
-The demo data lives in its own Postgres schema (settings.sample_schema, default "realestate_sample"),
-completely separate from the real data in settings.db_schema. Nothing here touches the real schema.
+The demo data lives in `app/sample/sample_data.json`, never in the database. This script runs the
+deterministic demo seed into a throw-away in-memory database and writes the result to that file.
 
 Usage (from backend/):
-    python -m scripts.sample_data            # create schema + tables, (re)seed demo data
+    python -m scripts.sample_data
 """
 
 from __future__ import annotations
 
-from sqlalchemy import MetaData, func, select, text
+import json
 
-from app.core.config import settings
-from app.db.session import SampleSessionLocal, engine, sample_engine
-from app.models import Activity, Agent, Base, Client, Deal, DealChecklistItem, MarketSnapshot, Property
-from scripts.seed import reset, seed
+from sqlalchemy.orm import Session
+
+from app.db.sample import SAMPLE_FILE, dump, new_memory_engine
+from scripts.seed import seed
 
 
 def main() -> None:
-    if not settings.sample_supported or sample_engine is None or SampleSessionLocal is None:
-        raise SystemExit("Sample data needs PostgreSQL (it lives in a separate schema).")
-    schema = settings.sample_schema
-
-    with engine.begin() as conn:
-        conn.execute(text(f'CREATE SCHEMA IF NOT EXISTS "{schema}"'))
-    # Copy every table definition into the sample schema (FKs are re-targeted to it as well).
-    sample_md = MetaData()
-    for table in Base.metadata.sorted_tables:
-        if table.name == "users":  # sign-in accounts exist only in the real schema
-            continue
-        table.to_metadata(sample_md, schema=schema)
-    sample_md.create_all(engine)
-    # Columns added by later migrations (create_all never alters existing tables).
-    with engine.begin() as conn:
-        for col, ddl in (("street", "VARCHAR(200)"), ("postal_code", "VARCHAR(10)"),
-                         ("city", "VARCHAR(80)"), ("invoice_paid_at", "DATE")):
-            conn.execute(text(f'ALTER TABLE "{schema}".clients ADD COLUMN IF NOT EXISTS {col} {ddl}'))
-
-    with SampleSessionLocal() as db:
-        reset(db)
+    engine = new_memory_engine()
+    with Session(engine) as db:
         seed(db)
-        counts = {m.__tablename__: db.scalar(select(func.count()).select_from(m))
-                  for m in (Agent, Client, Property, Deal, DealChecklistItem, Activity, MarketSnapshot)}
-    print(f'Sample data in schema "{schema}":', ", ".join(f"{k}={v}" for k, v in counts.items()))
+    data = dump(engine)
+    SAMPLE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SAMPLE_FILE.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    counts = ", ".join(f"{name}={len(rows)}" for name, rows in data["tables"].items())
+    print(f"Wrote {SAMPLE_FILE} ({SAMPLE_FILE.stat().st_size // 1024} KB): {counts}")
 
 
 if __name__ == "__main__":

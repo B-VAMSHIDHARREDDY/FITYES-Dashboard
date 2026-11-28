@@ -23,3 +23,6 @@ backend/FITYES_Partner_shareable with Developers.xlsx
 # not yet reviewed for real credentials — check they hold placeholders only before un-ignoring
 backend/.env.example
 frontend/.env.example
+
+# local database backups (contain real partner data) — never publish
+backend/backups/

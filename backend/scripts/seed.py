@@ -4,6 +4,9 @@ Usage (from backend/):
     python -m scripts.seed            # refuses if data already exists
     python -m scripts.seed --reset    # wipes ONLY this app's tables, then seeds
     python -m scripts.seed --add 100  # appends 100 more listings (+ deals) to existing data
+
+The database is for real data only, so this refuses to run against Postgres. Demo data for the
+"Sample data" switch lives in app/sample/sample_data.json (regenerate: python -m scripts.sample_data).
 """
 
 from __future__ import annotations
@@ -427,6 +430,11 @@ def main() -> None:
     parser.add_argument("--reset", action="store_true", help="delete existing app data first")
     parser.add_argument("--add", type=int, metavar="N", help="append N more listings (with deals) to existing data")
     args = parser.parse_args()
+    from app.core.config import settings
+
+    if not settings.is_sqlite:
+        raise SystemExit("Refusing to write demo data into the real (Postgres) database. "
+                         "Demo data lives in app/sample/sample_data.json - see scripts.sample_data.")
     with SessionLocal() as db:
         if args.add:
             add_more(db, args.add)
